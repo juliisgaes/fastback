@@ -14,6 +14,8 @@ typedef struct {
 typedef struct {
 	Rectangle dimensions;
 	Texture2D textures[2];
+	float rotation;
+	float scale;
 } Button;
 
 // definiendo funciones para no complicarme la vida
@@ -40,10 +42,13 @@ void UnloadTextures(FastbackTool* tool, Texture2D* textures) {
 	}
 }
 // función para cargar botones y regresar un array de los mismos
-void LoadButtons(FastbackTool* tool, Rectangle dimensions[], const char* texturespath[], Button* buttons) {
+void LoadButtons(FastbackTool* tool, Rectangle dimensions[], const char* texturespath[],
+float rotation[], float scale[], Button* buttons) {
 	// cargarndo dimensiones del botón
 	for (int i = 0; i < tool->buttonsNu; i++) {
 		buttons[i].dimensions = dimensions[i];
+		buttons[i].rotation = rotation[i];
+		buttons[i].scale = scale[i];
 		for (int j = 0; j < 2; j++) {
 			buttons[i].textures[j] = LoadTexture(texturespath[(i * 2) + j]);
 		}
@@ -63,15 +68,57 @@ void UnloadButtons(FastbackTool* tool, Button* buttons) {
 void RenderScene1(FastbackTool* tool, Texture2D* textures, Button* buttons) {
 	// dibujando sprites animados
 	if (tool->timer >= 0.5) {
-		DrawTexture(buttons[0].textures[1], buttons[0].dimensions.x, buttons[0].dimensions.y, WHITE);
-//		DrawTexture(textures[1], 70, 20, WHITE);
+		DrawTextureEx(buttons[0].textures[1], (Vector2){buttons[0].dimensions.x,
+		buttons[0].dimensions.y},
+		buttons[0].rotation, buttons[0].scale, WHITE);
+		DrawTextureEx(buttons[1].textures[1], (Vector2){buttons[1].dimensions.x,
+		buttons[1].dimensions.y},
+		buttons[1].rotation, buttons[1].scale, WHITE);
+		DrawTexture(textures[1], 70, 40, WHITE);
 	}
 	else {
-		DrawTexture(buttons[0].textures[0], buttons[0].dimensions.x, buttons[0].dimensions.y, WHITE);
-//		DrawTexture(textures[0], 70, 20, WHITE);
+		DrawTextureEx(buttons[0].textures[0], (Vector2){buttons[0].dimensions.x,
+		buttons[0].dimensions.y},
+		buttons[0].rotation, buttons[0].scale, WHITE);
+		DrawTextureEx(buttons[1].textures[0], (Vector2){buttons[1].dimensions.x,
+		buttons[1].dimensions.y},
+		buttons[1].rotation, buttons[1].scale, WHITE);
+		DrawTexture(textures[0], 70, 40, WHITE);
 	}
-	// saliendo de la escena
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		tool->scene = 2;
+	// definiendo el comportamiento del botón jugar
+	if (CheckCollisionPointRec(GetMousePosition(), buttons[0].dimensions)) {
+		if (buttons[0].scale < 1.05) {
+			buttons[0].scale += GetFrameTime();
+			buttons[0].dimensions.x -= 173.25 * GetFrameTime();
+			buttons[0].dimensions.y -= 63 * GetFrameTime();
+		}
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+			tool->scene = 2;
+		}
+	}
+	else {
+		if (buttons[0].scale > 1) {
+			buttons[0].scale -= GetFrameTime();
+			buttons[0].dimensions.x += 173.25 * GetFrameTime();
+			buttons[0].dimensions.y += 63 * GetFrameTime();
+		}
+	}
+	// definiendo el comportamiento del botón salir
+	if (CheckCollisionPointRec(GetMousePosition(), buttons[1].dimensions)) {
+		if (buttons[1].scale < 1.05) {
+			buttons[1].scale += GetFrameTime();
+			buttons[1].dimensions.x -= 173.25 * GetFrameTime();
+			buttons[1].dimensions.y -= 63 * GetFrameTime();
+		}
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+			tool->scene = 2;
+		}
+	}
+	else {
+		if (buttons[1].scale > 1) {
+			buttons[1].scale -= GetFrameTime();
+			buttons[1].dimensions.x += 173.25 * GetFrameTime();
+			buttons[1].dimensions.y += 63 * GetFrameTime();
+		}
 	}
 }
