@@ -6,10 +6,12 @@
 #include "include/fastback.h"
 
 int main(void) {
-	FastbackTool tool = CreateFastbackTool(0, 0, 0, 0);
+	FastbackTool tool = CreateFastbackTool(0, 0, 0, 0, 0);
+	Texture2D* textures = NULL;
+	Button* buttons = NULL;
 	InitWindow(500, 500, "fastback");
 	SetTargetFPS(60);
-	while (!WindowShouldClose() && tool.scene < 3) {
+	while (!WindowShouldClose() && tool.scene < 6) {
 		// timer simple
 		if (tool.timer >= 1) {
 			tool.timer = 0;
@@ -22,14 +24,14 @@ int main(void) {
 		switch (tool.scene) {
 			case 0:
 				tool.texturesNu = 2;
-				Texture2D* textures = MemAlloc(sizeof(Texture2D) * tool.texturesNu);
+				textures = MemAlloc(sizeof(Texture2D) * tool.texturesNu);
 				if (textures == NULL) {
 					return 1;
 				}
 				LoadTextures(&tool, (const char*[]){"resources/sprites/title/title-1.png",
 				"resources/sprites/title/title-2.png"}, textures);
 				tool.buttonsNu = 2;
-				Button* buttons = MemAlloc(sizeof(Button) * tool.buttonsNu);
+				buttons = MemAlloc(sizeof(Button) * tool.buttonsNu);
 				if (buttons == NULL) {
 					return 1;
 				}
@@ -51,7 +53,28 @@ int main(void) {
 				UnloadButtons(&tool, buttons);
 				MemFree(buttons);
 				buttons = NULL;
-				tool.scene = 3;
+				tool.scene = tool.nextscene;
+			break;
+			case 3:
+				tool.texturesNu = 6;
+				textures = MemAlloc(sizeof(Texture2D) * tool.texturesNu);
+				if (textures == NULL) {
+					return 1;
+				}
+				LoadTextures(&tool, (const char*[]){"resources/sprites/talk/talk-1.png",
+				"resources/sprites/talk/talk-2.png", "resources/sprites/talk/player-sleep-1.png",
+				"resources/sprites/talk/player-sleep-2.png", "resources/sprites/talk/text-1.png",
+				"resources/sprites/talk/text-2.png"}, textures);
+				tool.scene = 4;
+			break;
+			case 4:
+				RenderScene2(&tool, textures);
+			break;
+			case 5:
+				UnloadTextures(&tool, textures);
+				MemFree(textures);
+				textures = NULL;
+				tool.scene = tool.nextscene;
 			break;
 		}
 		EndDrawing();
