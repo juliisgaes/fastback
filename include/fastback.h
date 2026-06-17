@@ -19,12 +19,19 @@ typedef struct {
 	float rotation;
 	float scale;
 } Button;
+// struct para encapsular al jugador
+typedef struct {
+	Rectangle dimensions;
+	Texture2D textures[2];
+	float rotation;
+	float scale;
+} Player;
 
 // definiendo funciones para no complicarme la vida
 
-// función para crear una colección de herramientas útiles
+// funcion para encapsular un conjunto de herramientas
 FastbackTool CreateFastbackTool(int scene, int nextscene, int texturesNu, int buttonsNu,
-int misccounter, double timer) {
+int misccounter, float timer) {
 	FastbackTool tool;
 	tool.scene = scene;
 	tool.nextscene = nextscene;
@@ -67,26 +74,39 @@ void UnloadButtons(FastbackTool* tool, Button* buttons) {
 		}
 	}
 }
+// función para cargar jugador
+void LoadPlayer(Rectangle dimensions, const char* texturespath[],
+float rotation, float scale, Player* player) {
+	// cargarndo dimensiones del botón
+	player->dimensions = dimensions;
+	player->rotation = rotation;
+	player->scale = scale;
+	for (int i = 0; i < 2; i++) {
+		player->textures[i] = LoadTexture(texturespath[i]);
+	}
+}
+// función para descargar jugador
+void UnloadPlayer(Player* player) {
+	for (int i = 0; i < 2; i++) {
+		UnloadTexture(player->textures[i]);
+	}
+}
 
 // definiendo funciones para dibujar las escenas
 void RenderScene1(FastbackTool* tool, Texture2D* textures, Button* buttons) {
 	// dibujando sprites animados
 	if (tool->timer >= 0.5) {
 		DrawTextureEx(buttons[0].textures[1], (Vector2){buttons[0].dimensions.x,
-		buttons[0].dimensions.y},
-		buttons[0].rotation, buttons[0].scale, WHITE);
+		buttons[0].dimensions.y}, buttons[0].rotation, buttons[0].scale, WHITE);
 		DrawTextureEx(buttons[1].textures[1], (Vector2){buttons[1].dimensions.x,
-		buttons[1].dimensions.y},
-		buttons[1].rotation, buttons[1].scale, WHITE);
+		buttons[1].dimensions.y}, buttons[1].rotation, buttons[1].scale, WHITE);
 		DrawTexture(textures[1], 70, 40, WHITE);
 	}
 	else {
 		DrawTextureEx(buttons[0].textures[0], (Vector2){buttons[0].dimensions.x,
-		buttons[0].dimensions.y},
-		buttons[0].rotation, buttons[0].scale, WHITE);
+		buttons[0].dimensions.y}, buttons[0].rotation, buttons[0].scale, WHITE);
 		DrawTextureEx(buttons[1].textures[0], (Vector2){buttons[1].dimensions.x,
-		buttons[1].dimensions.y},
-		buttons[1].rotation, buttons[1].scale, WHITE);
+		buttons[1].dimensions.y}, buttons[1].rotation, buttons[1].scale, WHITE);
 		DrawTexture(textures[0], 70, 40, WHITE);
 	}
 	// definiendo el comportamiento del botón jugar
@@ -141,7 +161,7 @@ void RenderScene2(FastbackTool* tool, Texture2D* textures) {
 				DrawTexture(textures[8], 240, 395, WHITE);
 			break;
 			case 2:
-				DrawTexture(textures[10], 65, 350, WHITE);
+				DrawTexture(textures[10], 65, 355, WHITE);
 				DrawTexture(textures[12], 185, 380, WHITE);
 			break;
 		}
@@ -158,7 +178,7 @@ void RenderScene2(FastbackTool* tool, Texture2D* textures) {
 				DrawTexture(textures[9], 240, 395, WHITE);
 			break;
 			case 2:
-				DrawTexture(textures[11], 65, 350, WHITE);
+				DrawTexture(textures[11], 65, 355, WHITE);
 				DrawTexture(textures[13], 185, 380, WHITE);
 			break;
 		}
@@ -167,7 +187,21 @@ void RenderScene2(FastbackTool* tool, Texture2D* textures) {
 		tool->misccounter += 1;
 		if (tool->misccounter >= 3) {
 			tool->scene = 5;
-			tool->nextscene = 7;
+			tool->nextscene = 6;
 		}
+	}
+}
+void RenderScene3(FastbackTool* tool, Player* player) {
+	if (tool->timer >= 0.5) {
+		DrawTextureEx(player->textures[1], (Vector2){player->dimensions.x,
+		player->dimensions.y}, player->rotation, player->scale, WHITE);
+	}
+	else {
+		DrawTextureEx(player->textures[0], (Vector2){player->dimensions.x,
+		player->dimensions.y}, player->rotation, player->scale, WHITE);
+	}
+	if (IsKeyPressed(KEY_SPACE)) {
+		tool->scene = 8;
+		tool->nextscene = 9;
 	}
 }

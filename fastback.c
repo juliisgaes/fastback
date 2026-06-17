@@ -9,9 +9,10 @@ int main(void) {
 	FastbackTool tool = CreateFastbackTool(0, 0, 0, 0, 0, 0);
 	Texture2D* textures = NULL;
 	Button* buttons = NULL;
+	Player* player = NULL;
 	InitWindow(500, 500, "fastback");
 	SetTargetFPS(60);
-	while (!WindowShouldClose() && tool.scene < 6) {
+	while (!WindowShouldClose() && tool.scene != 9) {
 		// timer simple
 		if (tool.timer >= 1) {
 			tool.timer = 0;
@@ -78,6 +79,21 @@ int main(void) {
 				UnloadTextures(&tool, textures);
 				MemFree(textures);
 				textures = NULL;
+				tool.scene = tool.nextscene;
+			break;
+			case 6:
+				player = MemAlloc(sizeof(Player));
+				LoadPlayer((Rectangle){0, 0, 0, 0}, (const char*[]){"resources/sprites/player/player-1.png",
+				"resources/sprites/player/player-2.png"}, 0, 1, player);
+				tool.scene = 7;
+			break;
+			case 7:
+				RenderScene3(&tool, player);
+			break;
+			case 8:
+				UnloadPlayer(player);
+				MemFree(player);
+				player = NULL;
 				tool.scene = tool.nextscene;
 			break;
 		}
