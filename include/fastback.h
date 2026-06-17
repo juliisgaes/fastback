@@ -191,7 +191,9 @@ void RenderScene2(FastbackTool* tool, Texture2D* textures) {
 		}
 	}
 }
-void RenderScene3(FastbackTool* tool, Player* player) {
+void RenderScene3(FastbackTool* tool, Texture2D textures[], Player* player) {
+	BeginMode2D((Camera2D){{208, 203}, {player->dimensions.x, player->dimensions.y}, 0, 1});
+	DrawTextureEx(textures[0], (Vector2){-84, -94}, 0, 2, WHITE);
 	if (tool->timer >= 0.5) {
 		DrawTextureEx(player->textures[1], (Vector2){player->dimensions.x,
 		player->dimensions.y}, player->rotation, player->scale, WHITE);
@@ -200,8 +202,21 @@ void RenderScene3(FastbackTool* tool, Player* player) {
 		DrawTextureEx(player->textures[0], (Vector2){player->dimensions.x,
 		player->dimensions.y}, player->rotation, player->scale, WHITE);
 	}
+	if (IsKeyDown(KEY_RIGHT)) {
+		player->dimensions.x += 100 * GetFrameTime();
+	}
+	if (IsKeyDown(KEY_LEFT)) {
+		player->dimensions.x -= 100 * GetFrameTime();
+	}
+	if (IsKeyDown(KEY_DOWN)) {
+		player->dimensions.y += 100 * GetFrameTime();
+	}
+	if (IsKeyDown(KEY_UP)) {
+		player->dimensions.y -= 100 * GetFrameTime();
+	}
 	if (IsKeyPressed(KEY_SPACE)) {
 		tool->scene = 8;
 		tool->nextscene = 9;
 	}
+	EndMode2D();
 }

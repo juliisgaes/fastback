@@ -48,13 +48,14 @@ int main(void) {
 				RenderScene1(&tool, textures, buttons);
 			break;
 			case 2:
-				UnloadTextures(&tool, textures);
-				MemFree(textures);
-				textures = NULL;
 				UnloadButtons(&tool, buttons);
 				MemFree(buttons);
 				buttons = NULL;
+				UnloadTextures(&tool, textures);
+				MemFree(textures);
+				textures = NULL;
 				tool.scene = tool.nextscene;
+
 			break;
 			case 3:
 				tool.texturesNu = 14;
@@ -82,18 +83,30 @@ int main(void) {
 				tool.scene = tool.nextscene;
 			break;
 			case 6:
+				tool.texturesNu = 1;
+				textures = MemAlloc(sizeof(Texture2D) * tool.texturesNu);
+				if (textures == NULL) {
+					return 1;
+				}
+				LoadTextures(&tool, (const char*[]){"resources/sprites/backgrounds/background.png"}, textures);
 				player = MemAlloc(sizeof(Player));
-				LoadPlayer((Rectangle){0, 0, 0, 0}, (const char*[]){"resources/sprites/player/player-1.png",
+				if (player == NULL) {
+					return 1;
+				}
+				LoadPlayer((Rectangle){0, 0, 84, 94}, (const char*[]){"resources/sprites/player/player-1.png",
 				"resources/sprites/player/player-2.png"}, 0, 1, player);
 				tool.scene = 7;
 			break;
 			case 7:
-				RenderScene3(&tool, player);
+				RenderScene3(&tool, textures, player);
 			break;
 			case 8:
 				UnloadPlayer(player);
 				MemFree(player);
 				player = NULL;
+				UnloadTextures(&tool, textures);
+				MemFree(textures);
+				textures = NULL;
 				tool.scene = tool.nextscene;
 			break;
 		}
