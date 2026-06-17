@@ -6,7 +6,7 @@
 #include "include/fastback.h"
 
 int main(void) {
-	FastbackTool tool = CreateFastbackTool(0, 0, 0, 0, 0);
+	FastbackTool tool = CreateFastbackTool(0, 0, 0, 0, 0, 0);
 	Texture2D* textures = NULL;
 	Button* buttons = NULL;
 	InitWindow(500, 500, "fastback");
@@ -56,7 +56,7 @@ int main(void) {
 				tool.scene = tool.nextscene;
 			break;
 			case 3:
-				tool.texturesNu = 6;
+				tool.texturesNu = 14;
 				textures = MemAlloc(sizeof(Texture2D) * tool.texturesNu);
 				if (textures == NULL) {
 					return 1;
@@ -64,7 +64,11 @@ int main(void) {
 				LoadTextures(&tool, (const char*[]){"resources/sprites/talk/talk-1.png",
 				"resources/sprites/talk/talk-2.png", "resources/sprites/talk/player-sleep-1.png",
 				"resources/sprites/talk/player-sleep-2.png", "resources/sprites/talk/text-1.png",
-				"resources/sprites/talk/text-2.png"}, textures);
+				"resources/sprites/talk/text-2.png", "resources/sprites/talk/player-awake-1.png",
+				"resources/sprites/talk/player-awake-2.png", "resources/sprites/talk/text-3.png",
+				"resources/sprites/talk/text-4.png", "resources/sprites/talk/player-talking-1.png",
+				"resources/sprites/talk/player-talking-2.png", "resources/sprites/talk/text-5.png",
+				"resources/sprites/talk/text-6.png"}, textures);
 				tool.scene = 4;
 			break;
 			case 4:
