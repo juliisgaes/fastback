@@ -25,6 +25,8 @@ typedef struct {
 	Texture2D textures[2];
 	float rotation;
 	float scale;
+	Vector2 speed;
+	Vector2 direction;
 } Player;
 
 // definiendo funciones para no complicarme la vida
@@ -76,11 +78,14 @@ void UnloadButtons(FastbackTool* tool, Button* buttons) {
 }
 // función para cargar jugador
 void LoadPlayer(Rectangle dimensions, const char* texturespath[],
-float rotation, float scale, Player* player) {
+float rotation, float scale, Vector2 speed, Vector2 direction,
+Player* player) {
 	// cargarndo dimensiones del botón
 	player->dimensions = dimensions;
 	player->rotation = rotation;
 	player->scale = scale;
+	player->speed = speed;
+	player->direction = direction;
 	for (int i = 0; i < 2; i++) {
 		player->textures[i] = LoadTexture(texturespath[i]);
 	}
@@ -193,30 +198,86 @@ void RenderScene2(FastbackTool* tool, Texture2D* textures) {
 }
 void RenderScene3(FastbackTool* tool, Texture2D textures[], Player* player) {
 	BeginMode2D((Camera2D){{208, 203}, {player->dimensions.x, player->dimensions.y}, 0, 1});
-	DrawTextureEx(textures[0], (Vector2){-84, -94}, 0, 2, WHITE);
 	if (tool->timer >= 0.5) {
+		DrawTextureEx(textures[1], (Vector2){-208, -203}, 0, 2, WHITE);
 		DrawTextureEx(player->textures[1], (Vector2){player->dimensions.x,
 		player->dimensions.y}, player->rotation, player->scale, WHITE);
+		DrawTexture(textures[3], player->dimensions.x + 84, player->dimensions.y + 130, WHITE);
 	}
 	else {
+		DrawTextureEx(textures[0], (Vector2){-208, -203}, 0, 2, WHITE);
 		DrawTextureEx(player->textures[0], (Vector2){player->dimensions.x,
 		player->dimensions.y}, player->rotation, player->scale, WHITE);
+		DrawTexture(textures[2], player->dimensions.x + 84, player->dimensions.y + 130, WHITE);
+
 	}
-	if (IsKeyDown(KEY_RIGHT)) {
-		player->dimensions.x += 100 * GetFrameTime();
+	player->direction = (Vector2){0, 0};
+	if (IsKeyDown(KEY_W)) {
+		player->direction.y -= 1;
 	}
-	if (IsKeyDown(KEY_LEFT)) {
-		player->dimensions.x -= 100 * GetFrameTime();
+	if (IsKeyDown(KEY_D)) {
+		player->direction.x += 1;
 	}
-	if (IsKeyDown(KEY_DOWN)) {
-		player->dimensions.y += 100 * GetFrameTime();
+	if (IsKeyDown(KEY_S)) {
+		player->direction.y += 1;
 	}
-	if (IsKeyDown(KEY_UP)) {
-		player->dimensions.y -= 100 * GetFrameTime();
+	if (IsKeyDown(KEY_A)) {
+		player->direction.x -= 1;
 	}
+	if (Vector2Length(player->direction) > 0) {
+		player->direction = Vector2Normalize(player->direction);
+	}
+	if (player->direction.x != 0) {
+		player->speed.x += player->direction.x * 300 * GetFrameTime();
+		if (player->speed.x > 300) {
+			player->speed.x = 300;
+		}
+		if (player->speed.x < -300) {
+			player->speed.x = -300;
+		}
+	}
+	else {
+		if (player->speed.x > 0) {
+			player->speed.x -= 300 * GetFrameTime();
+			if (player->speed.x < 0) {
+				player->speed.x = 0;
+			}
+		}
+		else if (player->speed.x < 0) {
+			player->speed.x += 300 * GetFrameTime();
+			if (player->speed.x > 0) {
+				player->speed.x = 0;
+			}
+		}
+	}
+	if (player->direction.y != 0) {
+		player->speed.y += player->direction.y * 300 * GetFrameTime();
+		if (player->speed.y > 300) {
+			player->speed.y = 300;
+		}
+		if (player->speed.y < -300) {
+			player->speed.y = -300;
+		}
+	}
+	else {
+		if (player->speed.y > 0) {
+			player->speed.y -= 300 * GetFrameTime();
+			if (player->speed.y < 0) {
+				player->speed.y = 0;
+			}
+		}
+		else if (player->speed.y < 0) {
+			player->speed.y += 300 * GetFrameTime();
+			if (player->speed.y > 0) {
+				player->speed.y = 0;
+			}
+		}
+	}
+	player->dimensions.y += player->speed.y * GetFrameTime();
+	player->dimensions.x += player->speed.x * GetFrameTime();
 	if (IsKeyPressed(KEY_SPACE)) {
 		tool->scene = 8;
-		tool->nextscene = 9;
+		tool->nextscene = 0;
 	}
 	EndMode2D();
 }

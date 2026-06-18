@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <raylib.h>
+#include <raymath.h>
 #include "include/fastback.h"
 
 int main(void) {
@@ -10,7 +11,7 @@ int main(void) {
 	Texture2D* textures = NULL;
 	Button* buttons = NULL;
 	Player* player = NULL;
-	InitWindow(500, 500, "fastback");
+	InitWindow(500, 500, "fastback - 0.1");
 	SetTargetFPS(60);
 	while (!WindowShouldClose() && tool.scene != 9) {
 		// timer simple
@@ -29,8 +30,8 @@ int main(void) {
 				if (textures == NULL) {
 					return 1;
 				}
-				LoadTextures(&tool, (const char*[]){"resources/sprites/title/title-1.png",
-				"resources/sprites/title/title-2.png"}, textures);
+				LoadTextures(&tool, (const char*[]){"resources/sprites/ui/title-1.png",
+				"resources/sprites/ui/title-2.png"}, textures);
 				tool.buttonsNu = 2;
 				buttons = MemAlloc(sizeof(Button) * tool.buttonsNu);
 				if (buttons == NULL) {
@@ -80,21 +81,24 @@ int main(void) {
 				UnloadTextures(&tool, textures);
 				MemFree(textures);
 				textures = NULL;
+				tool.misccounter = 0;
 				tool.scene = tool.nextscene;
 			break;
 			case 6:
-				tool.texturesNu = 1;
+				tool.texturesNu = 4;
 				textures = MemAlloc(sizeof(Texture2D) * tool.texturesNu);
 				if (textures == NULL) {
 					return 1;
 				}
-				LoadTextures(&tool, (const char*[]){"resources/sprites/backgrounds/background.png"}, textures);
+				LoadTextures(&tool, (const char*[]){"resources/sprites/backgrounds/background-1.png",
+				"resources/sprites/backgrounds/background-2.png", "resources/sprites/ui/spacebar-1.png",
+				"resources/sprites/ui/spacebar-2.png"}, textures);
 				player = MemAlloc(sizeof(Player));
 				if (player == NULL) {
 					return 1;
 				}
 				LoadPlayer((Rectangle){0, 0, 84, 94}, (const char*[]){"resources/sprites/player/player-1.png",
-				"resources/sprites/player/player-2.png"}, 0, 1, player);
+				"resources/sprites/player/player-2.png"}, 0, 1, (Vector2){0, 0}, (Vector2){0, 0}, player);
 				tool.scene = 7;
 			break;
 			case 7:
