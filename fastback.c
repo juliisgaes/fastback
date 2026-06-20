@@ -5,12 +5,15 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "include/fastback.h"
+#include "include/fastback-scenes.h"
 
 int main(void) {
+	// creando y declarando variables
 	FastbackTool tool = CreateFastbackTool(0, 0, 0, 0, 0, 0);
 	Texture2D* textures = NULL;
 	Button* buttons = NULL;
 	Player* player = NULL;
+	// iniciando ventana
 	InitWindow(500, 500, "fastback - 0.1");
 	SetTargetFPS(60);
 	while (!WindowShouldClose() && tool.scene != 9) {
@@ -23,6 +26,7 @@ int main(void) {
 		}
 		BeginDrawing();
 		ClearBackground(WHITE);
+		DrawFPS(20, 20);
 		switch (tool.scene) {
 			case 0:
 				tool.texturesNu = 2;
